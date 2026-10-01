@@ -744,6 +744,11 @@ impl Credit {
                 ) as i128;
             }
 
+            // Clamp the fee to what is actually being repaid so that
+            // `fee + reserve_amount == effective_repay` always holds exactly,
+            // regardless of fee_bps configuration (Issue #1336).
+            let fee = fee.min(effective_repay);
+
             // Transfer fee portion into contract (treasury accumulator), then
             // transfer remaining amount into the reserve.
             if fee > 0 {
